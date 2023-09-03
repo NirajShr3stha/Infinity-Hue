@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
-
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -16,13 +16,14 @@ class Img_discover extends StatefulWidget {
 // -- NSFW API --
 class _Img_discoverState extends State<Img_discover> {
   final ScrollController _scrollController = ScrollController();
-  final images = <Uint8List>[];
+  final imagess = <Uint8List>[];
+  final images = <String>[];
 
   bool _isLoading = false;
   int page = 1;
   // Method to fetch images from the Civitai API
   void fetchImages(
-      {int limit = 10, int page = 1, String query = "dragon"}) async {
+      {int limit = 20, int page = 1, String query = "dragon"}) async {
     // Set the base URL for the Civitai API
     final base_url = "https://civitai.com/api/v1";
 
@@ -47,29 +48,50 @@ class _Img_discoverState extends State<Img_discover> {
     // Check if the request was successful
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
+      var i = 0;
       // Iterate over the image data
       for (final model in data["items"]) {
-        print("Image ID: ${model['id']}");
-        print("Image Name: ${model['name']}");
-
+        // print("Image ID: ${model['id']}");
+        // print("Image Name: ${model['name']}");
+        //print("Image Name: $i}");
+        i = i + 1;
+        // if (i >30){
+        //   print(model['url']);
+        // }
         // Get the image URL
-        final imageUrl = model['url'];
+        final response = await http.get(Uri.parse(model['url']));
+        final contentType = response.headers['content-type'];
 
-        // Make a GET request to fetch the image data
-        final imageResponse = await http.get(Uri.parse(imageUrl));
-
-        // Check if the request was successful
-        if (imageResponse.statusCode == 200) {
-          // Add the image data to the list of images
-          setState(() {
-            images.add(imageResponse.bodyBytes);
-            _isLoading = false;
-          });
+        if (contentType == 'image/jpeg' ||
+            contentType == 'image/png' ||
+            contentType == 'image/webp') {
+          // The response contains a JPEG image
+          //images.add(imageResponse.bodyBytes);
+          int listLength = images.length;
+          if (listLength > 20) {
+            images.clear();
+          }
+          images.add(model['url']);
+        } else {
+          print("video found");
+          print(model['url']);
         }
+
+        // // Make a GET request to fetch the image data
+        // final imageResponse = await http.get(Uri.parse(imageUrl));
+
+        // // Check if the request was successful
+        // if (imageResponse.statusCode == 200) {
+        //   // Add the image data to the list of images
+
+        // }
+  setState(() {
+    _isLoading = false;
+        });
       }
     } else {
       print("An error occurred while fetching data from the Civitai API");
+      print(response.statusCode);
     }
   }
 
@@ -107,13 +129,13 @@ class _Img_discoverState extends State<Img_discover> {
               padding: const EdgeInsets.all(3.5),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ImageFullScreen(imageBytes: images[index]),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   // MaterialPageRoute(
+                  //   //   // builder: (context) =>
+                  //   //   //     ImageFullScreen(imageBytes: images[index]),
+                  //   // ),
+                  // );
                 },
                 onLongPress: () {
                   showDialog(
@@ -144,7 +166,7 @@ class _Img_discoverState extends State<Img_discover> {
                                 padding: const EdgeInsets.all(1.0),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Image.memory(images[index]),
+                                  child: FastCachedImage(url: images[index]),
                                 ),
                               ),
                             ),
@@ -156,7 +178,7 @@ class _Img_discoverState extends State<Img_discover> {
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: Image.memory(images[index]),
+                  child: FastCachedImage(url: images[index]),
                 ),
               ),
             ),

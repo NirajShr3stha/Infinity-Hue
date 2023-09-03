@@ -1,9 +1,12 @@
 import 'package:ai_diffusion/views/home_page.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 //import 'package:ai_diffusion/views/imagine.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-void main() {
+void main() async{
+  await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 15));
+
   runApp(const MyApp());
 }
 

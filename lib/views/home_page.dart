@@ -1,6 +1,6 @@
 import 'package:ai_diffusion/views/gallery_page.dart';
 import 'package:ai_diffusion/views/imagine_page.dart';
-import 'package:ai_diffusion/views/showcase.dart';
+import 'package:ai_diffusion/views/Discover/showcase.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatelessWidget {
