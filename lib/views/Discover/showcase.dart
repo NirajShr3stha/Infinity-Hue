@@ -24,15 +24,20 @@ class _Img_discoverState extends State<Img_discover> {
   int page = 1;
 
   // Method to fetch images from the Civitai API
-  void fetchImages(
+  Future<void> fetchImages(
       {int limit = 20, int page = 1, String query = "dragon"}) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     // Set the base URL for the Civitai API
     final base_url = "https://civitai.com/api/v1";
     print(limit.toString() + "   " + page.toString());
+
     // Set the endpoint for the images
     final endpoint = "/images";
 
-    // Set the query parameters
+    // Create the query parameters map
     final params = {
       "limit": limit.toString(),
       "page": page.toString(),
@@ -40,8 +45,7 @@ class _Img_discoverState extends State<Img_discover> {
     };
 
     // Build the query string from the params map
-    final queryString =
-        params.entries.map((e) => "${e.key}=${e.value}").join("&");
+    final queryString = Uri(queryParameters: params).query;
 
     // Make the GET request to the Civitai API
     final response =
@@ -50,8 +54,8 @@ class _Img_discoverState extends State<Img_discover> {
     // Check if the request was successful
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      var i = 0;
       final imagesss = await processData(data["items"]);
+
       setState(() {
         images.addAll(imagesss.cast<String>());
         _isLoading = false;
@@ -59,6 +63,9 @@ class _Img_discoverState extends State<Img_discover> {
     } else {
       print("An error occurred while fetching data from the Civitai API");
       print(response.statusCode);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -82,7 +89,6 @@ class _Img_discoverState extends State<Img_discover> {
     sendPort.send(images);
   }
 
-  // Function to process the data using isolates
   // Function to process the data using isolates
   Future<List> processData(List data) async {
     // Number of isolates to use
@@ -115,7 +121,6 @@ class _Img_discoverState extends State<Img_discover> {
     super.initState();
     fetchImages();
     _scrollController.addListener(() {
-      
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           page < 6) {
@@ -147,13 +152,13 @@ class _Img_discoverState extends State<Img_discover> {
               padding: const EdgeInsets.all(3.5),
               child: GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   // MaterialPageRoute(
-                  //   //   // builder: (context) =>
-                  //   //   //     ImageFullScreen(imageBytes: images[index]),
-                  //   // ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ImageFullScreen(imageUrl: images[index]),
+                    ),
+                  );
                 },
                 onLongPress: () {
                   showDialog(
@@ -213,9 +218,9 @@ class _Img_discoverState extends State<Img_discover> {
 
 //Image click to full screen - click to go back
 class ImageFullScreen extends StatelessWidget {
-  final Uint8List imageBytes;
+  final String imageUrl;
 
-  const ImageFullScreen({required this.imageBytes});
+  const ImageFullScreen({required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -224,13 +229,12 @@ class ImageFullScreen extends StatelessWidget {
       body: GestureDetector(
         onTap: () => Navigator.pop(context),
         child: Center(
-          child: Image.memory(imageBytes),
+          child: Image.network(imageUrl),
         ),
       ),
     );
   }
 }
-
 
 // ######################################################################
 //NSFW FILTER : PROBLEM REPEATING IMAGES
