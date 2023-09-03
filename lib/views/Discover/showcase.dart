@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -17,16 +18,17 @@ class Img_discover extends StatefulWidget {
 class _Img_discoverState extends State<Img_discover> {
   final ScrollController _scrollController = ScrollController();
   final imagess = <Uint8List>[];
-  final images = <String>[];
+  List images = <String>[];
 
   bool _isLoading = false;
   int page = 1;
+
   // Method to fetch images from the Civitai API
   void fetchImages(
       {int limit = 20, int page = 1, String query = "dragon"}) async {
     // Set the base URL for the Civitai API
     final base_url = "https://civitai.com/api/v1";
-
+    print(limit.toString() + "   " + page.toString());
     // Set the endpoint for the images
     final endpoint = "/images";
 
@@ -49,50 +51,63 @@ class _Img_discoverState extends State<Img_discover> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       var i = 0;
-      // Iterate over the image data
-      for (final model in data["items"]) {
-        // print("Image ID: ${model['id']}");
-        // print("Image Name: ${model['name']}");
-        //print("Image Name: $i}");
-        i = i + 1;
-        // if (i >30){
-        //   print(model['url']);
-        // }
-        // Get the image URL
-        final response = await http.get(Uri.parse(model['url']));
-        final contentType = response.headers['content-type'];
-
-        if (contentType == 'image/jpeg' ||
-            contentType == 'image/png' ||
-            contentType == 'image/webp') {
-          // The response contains a JPEG image
-          //images.add(imageResponse.bodyBytes);
-          int listLength = images.length;
-          if (listLength > 20) {
-            images.clear();
-          }
-          images.add(model['url']);
-        } else {
-          print("video found");
-          print(model['url']);
-        }
-
-        // // Make a GET request to fetch the image data
-        // final imageResponse = await http.get(Uri.parse(imageUrl));
-
-        // // Check if the request was successful
-        // if (imageResponse.statusCode == 200) {
-        //   // Add the image data to the list of images
-
-        // }
-  setState(() {
-    _isLoading = false;
-        });
-      }
+      final imagesss = await processData(data["items"]);
+      setState(() {
+        images.addAll(imagesss.cast<String>());
+        _isLoading = false;
+      });
     } else {
       print("An error occurred while fetching data from the Civitai API");
       print(response.statusCode);
     }
+  }
+
+  static void processChunk(List args) async {
+    final sendPort = args[0] as SendPort;
+    final chunk = args[1] as List;
+    final images = [];
+    for (final model in chunk) {
+      final response = await http.get(Uri.parse(model['url']));
+      final contentType = response.headers['content-type'];
+      if (contentType == 'image/jpeg' ||
+          contentType == 'image/png' ||
+          contentType == 'image/webp') {
+        images.add(model['url']);
+        FastCachedImage(url: model['url']);
+      } else {
+        print("video found");
+        print(model['url']);
+      }
+    }
+    sendPort.send(images);
+  }
+
+  // Function to process the data using isolates
+  // Function to process the data using isolates
+  Future<List> processData(List data) async {
+    // Number of isolates to use
+    final numIsolates = 4;
+    // Divide the data into chunks
+    final chunkSize = (data.length / numIsolates).ceil();
+    final chunks = List.generate(
+        numIsolates, (i) => data.sublist(i * chunkSize, (i + 1) * chunkSize));
+    // Create a list to store the results
+    final results = [];
+    // Create a list to store the receive ports
+    final receivePorts = [];
+    for (int i = 0; i < numIsolates; i++) {
+      // Create a receive port
+      final receivePort = ReceivePort();
+      receivePorts.add(receivePort);
+      // Spawn an isolate
+      await Isolate.spawn(processChunk, [receivePort.sendPort, chunks[i]]);
+    }
+    // Wait for all isolates to finish
+    final messages = await Future.wait(receivePorts.map((port) => port.first));
+    for (final message in messages) {
+      results.addAll(message);
+    }
+    return results;
   }
 
   @override
@@ -100,10 +115,13 @@ class _Img_discoverState extends State<Img_discover> {
     super.initState();
     fetchImages();
     _scrollController.addListener(() {
+      
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          page < 6) {
         setState(() {
           _isLoading = true;
+          print(images.length.toString() + "image number");
           page++;
           fetchImages(page: page);
         });
