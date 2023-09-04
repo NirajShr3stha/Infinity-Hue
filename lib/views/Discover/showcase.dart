@@ -129,92 +129,110 @@ class _Img_discoverState extends State<Img_discover> {
           print(images.length.toString() + "image number");
           page++;
           fetchImages(page: page);
+          if(page == 2){
+            print(images);
+          }
+        });
+      }
+      else if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          page < 6) {
+        setState(() {
+          _isLoading = true;
+          print(images.length.toString() + "image number");
+          page++;
+          fetchImages(page: page);
+          if(page == 2){
+            print(images);
+          }
         });
       }
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Community Showcase'),
-      ),
-      body: Stack(
-        children: [
-          MasonryGridView.builder(
-            controller: _scrollController,
-            itemCount: images.length,
-            gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.all(3.5),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ImageFullScreen(imageUrl: images[index]),
-                    ),
-                  );
-                },
-                onLongPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Stack(
-                        children: [
-                          Positioned.fill(
-                            child: GestureDetector(
-                              onTap: () => Navigator.of(context).pop(),
-                              child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 1, sigmaY: 1.5),
-                                child: Container(
-                                  color: Colors.black.withOpacity(0.5),
-                                ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Community Showcase'),
+    ),
+    body: Stack(
+      children: [
+        GridView.builder(
+          controller: _scrollController,
+          itemCount: images.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.all(3.5),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ImageFullScreen(imageUrl: images[index]),
+                  ),
+                );
+              },
+              onLongPress: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Stack(
+                      children: [
+                        Positioned.fill(
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: BackdropFilter(
+                              filter:
+                                  ImageFilter.blur(sigmaX: 1, sigmaY: 1.5),
+                              child: Container(
+                                color: Colors.black.withOpacity(0.5),
                               ),
                             ),
                           ),
-                          Dialog(
-                            backgroundColor: Colors.transparent,
-                            child: Container(
-                              decoration: BoxDecoration(
+                        ),
+                        Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(1.0),
+                              child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(1.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: FastCachedImage(url: images[index]),
-                                ),
+                                child:
+                                    FastCachedImage(url: images[index]),
                               ),
                             ),
                           ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: FastCachedImage(url: images[index]),
-                ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child:
+                    FastCachedImage(url: images[index]),
               ),
             ),
           ),
-          if (_isLoading)
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
-      ),
-    );
-  }
-}
+        ),
+        if (_isLoading)
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+      ],
+    ),
+  );
+}}
+
 
 //Image click to full screen - click to go back
 class ImageFullScreen extends StatelessWidget {
@@ -380,3 +398,5 @@ class ImageFullScreen extends StatelessWidget {
   //       print("An error occurred while fetching data from the Civitai API");
   //     }
   //   }
+  
+ 
