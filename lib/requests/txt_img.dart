@@ -11,13 +11,15 @@ final progressValue = ValueNotifier<double>(0.0);
 
 Future<String> createImage(BuildContext context, String prompt) async {
   //const url = 'http://192.168.1.105:7860';
-  if (defaultNegativePrompt.text.trim().isEmpty || !defaultNegativePrompt.text.contains(RegExp(r'[a-zA-Z0-9]'))) {
-    defaultNegativePrompt.text = "easynegative, bad_prompt_version2-neg, ng_deepnegative_v1_75t, verybadimagenegative_v1.3," +
-                "(Poorly Made Bad 3D),censored, 3d, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, bad hands," +
-                "canvas frame, cartoon, 3d, ((disfigured)),((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), wierd colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy, 3d render, " +
-                "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, " +
-                "mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, " +
-                "body out of frame, blurry, bad art, bad anatomy, blurred, text, watermark, grainy";
+  if (defaultNegativePrompt.text.trim().isEmpty ||
+      !defaultNegativePrompt.text.contains(RegExp(r'[a-zA-Z0-9]'))) {
+    defaultNegativePrompt.text =
+        "easynegative, bad_prompt_version2-neg, ng_deepnegative_v1_75t, verybadimagenegative_v1.3," +
+            "(Poorly Made Bad 3D),censored, 3d, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, bad hands," +
+            "canvas frame, cartoon, 3d, ((disfigured)),((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), wierd colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy, 3d render, " +
+            "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, " +
+            "mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, " +
+            "body out of frame, blurry, bad art, bad anatomy, blurred, text, watermark, grainy";
   }
 
   var map = <String, String>{};
@@ -36,16 +38,16 @@ Future<String> createImage(BuildContext context, String prompt) async {
   }
 
   map['prompt'] = prompt;
-  map['seed'] = "-1";
+  map['seed'] = "${prefs.getString("seed")}";
   map['subseed'] = "-1";
-  map['batch_size'] = "1";
+  map['batch_size'] = "${prefs.getInt("batch_size")}";
   map['steps'] = "${prefs.getInt("steps")}";
   map['cfg_scale'] = "${prefs.getInt("cfg")}";
   map['width'] = "${prefs.getInt("width") ?? 512}";
   map['height'] = "${prefs.getInt("height") ?? 512}";
-  map['negative_prompt'] = prefs.getString("defaultNegativePrompt")!;
   map['sampler_index'] = prefs.getString("sampler")!;
   map['restore_faces'] = prefs.getBool("restore-faces").toString();
+  map['negative_prompt'] = prefs.getString("defaultNegativePrompt")!;
 
   var body = json.encode(map);
   print(map);

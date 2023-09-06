@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_diffusion/requests/txt_img.dart';
@@ -8,6 +9,7 @@ bool hasDataLoaded = false;
 var host = TextEditingController();
 var _stepsValue = ValueNotifier<int>(10);
 var _batchValue = ValueNotifier<int>(1);
+var seed = TextEditingController(text: "-1");
 var _scfValue = ValueNotifier<int>(10);
 var restoreFaces = ValueNotifier<bool>(false);
 var seedfixed = ValueNotifier<bool>(false);
@@ -520,21 +522,33 @@ class _ImagineState extends State<Imagine> {
                   padding: const EdgeInsets.all(10.0),
                   color: Colors.blueGrey,
                   width: double.infinity,
-                  child: Column(children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Restore faces",
-                        style: TextStyle(
-                          color: Colors.white,
+                  child: Column(
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Restore faces",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    //this is for creating space
-                    customSwitch(
-                        'Restore faces', _restoreFace, onChangeFunction1),
-                  ]),
+                      const SizedBox(height: 8.0),
+                      //this is for creating space
+
+                      ValueListenableBuilder(
+                        valueListenable: restoreFaces,
+                        builder: (context, value, child) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                            child: customSwitch('Restore faces', _restoreFace,
+                                onChangeFunction1
+                              ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.all(10.0),
@@ -554,7 +568,7 @@ class _ImagineState extends State<Imagine> {
                     const SizedBox(height: 8.0), //this is for creating space
 
                     TextField(
-                      controller: _controller,
+                      controller: seed,
                       focusNode: _focusNode,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
@@ -578,23 +592,33 @@ class _ImagineState extends State<Imagine> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Text('Fixed'),
-                                  ValueListenableBuilder(
-                                    valueListenable: seedfixed,
-                                    builder: (context,value, child){
-                                      return Padding(
-                                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                                        child: Checkbox(
-                                      
-                                      value: _seedfixed,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _seedfixed = value ?? false;
-                                        });
-                                      },
-                                    ),
-                                      );
+                                  Checkbox(
+                                    value: _seedfixed,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _seedfixed = value ?? false;
+                                        if (_seedfixed == true &&
+                                            _seedfixed != -1) {
+                                          print(value);
+                                          int min = 111;
+                                          int max = 9999999;
+                                          int randomNumber =
+                                              min + Random().nextInt(max - min);
+                                          seed.value = TextEditingValue(
+                                              text: randomNumber.toString());
+                                          ;
+                                          print(seed);
+                                        } else {
+                                          int defaultval = -1;
+                                          seed.value = TextEditingValue(
+                                              text: defaultval.toString());
+                                          ;
+                                          print(_seedfixed);
+                                          print(seed);
+                                          value = false;
+                                        }
+                                      });
                                     },
-                                    
                                   ),
                                 ],
                               ),
@@ -665,8 +689,9 @@ class _ImagineState extends State<Imagine> {
           trackColor: Colors.grey,
           activeColor: Colors.green,
           value: val,
-          onChanged: (newValue) {
+          onChanged: (bool newValue) {
             onChangeMethod(newValue);
+            restoreFaces.value = newValue;
           },
         )
       ]),
@@ -680,6 +705,8 @@ Future<void> saveConfig(BuildContext context) async {
   prefs.setString("host", host.text);
   prefs.setInt('steps', _stepsValue.value);
   prefs.setInt('cfg', _scfValue.value);
+  prefs.setInt('batch_size', _batchValue.value);
+  prefs.setString('seed', seed.text);
   prefs.setString('sampler', sampler.value);
   prefs.setString('defaultPrompt', defaultPrompt.text);
   prefs.setString('defaultNegativePrompt', defaultNegativePrompt.text);
@@ -698,6 +725,8 @@ Future<void> loadSavedData() async {
       _stepsValue.value = prefs.getInt("steps") ?? 20;
       host.text = prefs.getString("host") ?? "";
       _scfValue.value = prefs.getInt("cfg") ?? 20;
+      _scfValue.value = prefs.getInt("batch_size") ?? 1;
+      seed.text = prefs.getString("seed") ?? "-1";
       restoreFaces.value = prefs.getBool("restore-faces") ?? false;
       sampler.value = prefs.getString("sampler") ?? "Euler";
       defaultPrompt.text = prefs.getString("defaultPrompt") ?? "";
