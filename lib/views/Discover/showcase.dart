@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class Img_discover extends StatefulWidget {
   const Img_discover({Key? key}) : super(key: key);

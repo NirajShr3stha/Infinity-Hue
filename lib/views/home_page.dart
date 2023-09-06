@@ -1,5 +1,5 @@
 import 'package:ai_diffusion/views/gallery_page.dart';
-import 'package:ai_diffusion/views/imagine_page.dart';
+import 'package:ai_diffusion/views/Imagine/imagine_before.dart';
 import 'package:ai_diffusion/views/Discover/showcase.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class Homepage extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (BuildContext context) {
-                    return const Imagine();
+                    return Imagine();
                   },
                 ),
               );
