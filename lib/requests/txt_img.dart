@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ai_diffusion/views/Imagine/imagine_before.dart';
+import 'package:ai_diffusion/views/Imagine/Advanced_settings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
