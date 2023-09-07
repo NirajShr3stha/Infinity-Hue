@@ -43,7 +43,7 @@ class Homepage extends StatelessWidget {
               //push to dynamic gallery page
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Img_discover()),
+                MaterialPageRoute(builder: (context) => Img_discover()),
               );
             },
             child: const Text('Community Showcase'),
