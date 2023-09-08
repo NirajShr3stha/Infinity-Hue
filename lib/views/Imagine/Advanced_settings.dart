@@ -64,25 +64,39 @@ class _Advanced_settingsState extends State<Advanced_settings> {
     });
   }
 
+  Widget makedismissible({required Widget child}) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: GestureDetector(onTap: () {}, child: child),
+      );
+
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.8,
-      minChildSize: 0.5,
-      maxChildSize: 1,
-      builder: (_, controller) => Container(
-        color: Colors.white,
-        padding: EdgeInsets.all(8),
-        child: ListView(
-          controller: controller,
-            //mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("lorem"),
-              // negativepromptContainer(),
-              // //modelContainer(context),
-              // restorefaceContainer(),
-              // restorefaceContainer(),
-            ]),
+    return makedismissible(
+      child: DraggableScrollableSheet(
+        //expand: false, // Set expand to false
+        initialChildSize: 0.5,
+        minChildSize: 0.5,
+        maxChildSize: 1,
+        builder: (_, Controller) => Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          padding: EdgeInsets.all(8),
+          child: ListView(
+              controller: Controller,
+              //mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("lorem"),
+                negativepromptContainer(),
+                stepsContainer(),
+                cfgContainer(),
+                samplerContainer(),
+                modelContainer(context),
+                restorefaceContainer(),
+                seedContainer(),
+              ]),
+        ),
       ),
     );
   }

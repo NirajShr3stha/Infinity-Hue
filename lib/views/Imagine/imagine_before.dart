@@ -172,12 +172,11 @@ class _ImagineState extends State<Imagine> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
-                  backgroundColor: Colors.black,
-                  isScrollControlled: false,
-                  //isDismissible: true,
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20))),
+                  isScrollControlled: true, // Set isScrollControlled to true
+                  isDismissible: true,
+                  enableDrag: true,
+                  backgroundColor: Colors.transparent,
+                  
                   builder: (context) => Advanced_settings(),
                 );
               },
