@@ -87,7 +87,7 @@ class _Advanced_settingsState extends State<Advanced_settings> {
               controller: Controller,
               //mainAxisSize: MainAxisSize.min,
               children: [
-                Text("lorem"),
+                //Text("lorem"),
                 negativepromptContainer(),
                 stepsContainer(),
                 cfgContainer(),

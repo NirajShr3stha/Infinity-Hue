@@ -24,7 +24,7 @@ class _Img_discoverState extends State<Img_discover> {
 
   // Method to fetch images from the Civitai API
   Future<void> fetchImages(
-      {int limit = 20, int page = 1, String query = "dragon"}) async {
+      {int limit = 20 , int page = 1, String query = "dragon"}) async {
     setState(() {
       _isLoading = true;
     });
