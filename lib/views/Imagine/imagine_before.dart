@@ -17,7 +17,21 @@ class _ImagineState extends State<Imagine> {
       val2 = newValue2;
     });
   }
-
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _currentPageNotifier = ValueNotifier<int>(0);
+    _pageController.addListener(() {
+      _currentPageNotifier.value = _pageController.page!.round();
+    });
+  }
+   @override
+  void dispose() {
+    _pageController.dispose();
+    _currentPageNotifier.dispose();
+    super.dispose();
+  }
   final List<String> _imagePaths = [
     'assets/1.webp',
     'assets/2.jpg',
@@ -37,8 +51,8 @@ class _ImagineState extends State<Imagine> {
   final List<Image> _rawimages = [
     // add more image paths here
   ];
-  PageController _pageController = PageController();
-
+  late final PageController _pageController;
+  late final ValueNotifier<int> _currentPageNotifier;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +98,7 @@ class _ImagineState extends State<Imagine> {
                 },
               ),
             ),
+            
             Padding(
               padding: const EdgeInsets.only(
                 left: 8,
@@ -91,45 +106,59 @@ class _ImagineState extends State<Imagine> {
               ),
               child: SizedBox(
                 height: 80, // Specify your container height for the preview
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: (_rawimages.isNotEmpty)
-                      ? _rawimages.length
-                      : _imagePaths.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: 4.0,
-                        top: 9.0,
-                        right: 4.0,
-                        bottom: 5.0,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          // You can add functionality to scroll to the selected image in the PageView
-                          _pageController.animateToPage( // Add this line
-                index,
-                duration: Duration(milliseconds: 400),
-                curve: Curves.easeInOut,
-              );
-                        },
-                        child: Container(
-                          width:
-                              65, // Specify your container width for the preview
-                          height:
-                              50, // Specify your container height for the preview
-                          child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(10), // Adjust as needed
-                            child: _rawimages.isNotEmpty
-                                ? _rawimages[index]
-                                : Image.asset(_imagePaths[index],
-                                    fit: BoxFit.cover),
+                child: ValueListenableBuilder<int>(
+                  valueListenable: _currentPageNotifier,
+                  builder: (context, currentPage, child){
+                   return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (_rawimages.isNotEmpty)
+                        ? _rawimages.length
+                        : _imagePaths.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          left: 4.0,
+                          top: 9.0,
+                          right: 4.0,
+                          bottom: 5.0,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // You can add functionality to scroll to the selected image in the PageView
+                            _pageController.animateToPage(
+                              // Add this line
+                              index,
+                              duration: Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Container(
+                            width:
+                                65, // Specify your container width for the preview
+                            height:
+                                50, // Specify your container height for the preview
+                            decoration: _pageController.page?.round() ==
+                                    index // Add this line
+                                ? BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.blue,
+                                        width: 3), // Add this line
+                                    borderRadius: BorderRadius.circular(10),
+                                  )
+                                : null,
+                            child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(10), // Adjust as needed
+                              child: _rawimages.isNotEmpty
+                                  ? _rawimages[index]
+                                  : Image.asset(_imagePaths[index],
+                                      fit: BoxFit.cover),
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  );}
                 ),
               ),
             ),
