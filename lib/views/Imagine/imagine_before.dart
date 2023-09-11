@@ -17,21 +17,26 @@ class _ImagineState extends State<Imagine> {
       val2 = newValue2;
     });
   }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
     _currentPageNotifier = ValueNotifier<int>(0);
+    _scrollController = ScrollController();
     _pageController.addListener(() {
       _currentPageNotifier.value = _pageController.page!.round();
     });
   }
-   @override
+
+  @override
   void dispose() {
     _pageController.dispose();
     _currentPageNotifier.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
+
   final List<String> _imagePaths = [
     'assets/1.webp',
     'assets/2.jpg',
@@ -53,6 +58,8 @@ class _ImagineState extends State<Imagine> {
   ];
   late final PageController _pageController;
   late final ValueNotifier<int> _currentPageNotifier;
+  late final ScrollController _scrollController;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +78,9 @@ class _ImagineState extends State<Imagine> {
             SizedBox(
               height: 300, // Specify your container height
               child: PageView.builder(
-                controller: _pageController, // Add the controller to your PageView
+                controller:
+                    _pageController, // Add the controller to your PageView
+
                 itemCount: (_rawimages.isNotEmpty)
                     ? _rawimages.length
                     : _imagePaths.length,
@@ -98,7 +107,7 @@ class _ImagineState extends State<Imagine> {
                 },
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.only(
                 left: 8,
@@ -107,59 +116,60 @@ class _ImagineState extends State<Imagine> {
               child: SizedBox(
                 height: 80, // Specify your container height for the preview
                 child: ValueListenableBuilder<int>(
-                  valueListenable: _currentPageNotifier,
-                  builder: (context, currentPage, child){
-                   return ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (_rawimages.isNotEmpty)
-                        ? _rawimages.length
-                        : _imagePaths.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          left: 4.0,
-                          top: 9.0,
-                          right: 4.0,
-                          bottom: 5.0,
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            // You can add functionality to scroll to the selected image in the PageView
-                            _pageController.animateToPage(
-                              // Add this line
-                              index,
-                              duration: Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: Container(
-                            width:
-                                65, // Specify your container width for the preview
-                            height:
-                                50, // Specify your container height for the preview
-                            decoration: _pageController.page?.round() ==
-                                    index // Add this line
-                                ? BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.blue,
-                                        width: 3), // Add this line
-                                    borderRadius: BorderRadius.circular(10),
-                                  )
-                                : null,
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(10), // Adjust as needed
-                              child: _rawimages.isNotEmpty
-                                  ? _rawimages[index]
-                                  : Image.asset(_imagePaths[index],
-                                      fit: BoxFit.cover),
+                    valueListenable: _currentPageNotifier,
+                    builder: (context, currentPage, child) {
+                      return ListView.builder(
+                        controller: _scrollController, // Add this line
+                        scrollDirection: Axis.horizontal,
+                        itemCount: (_rawimages.isNotEmpty)
+                            ? _rawimages.length
+                            : _imagePaths.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              left: 4.0,
+                              top: 9.0,
+                              right: 4.0,
+                              bottom: 5.0,
                             ),
-                          ),
-                        ),
+                            child: GestureDetector(
+                              onTap: () {
+                                _pageController.animateToPage(
+                                  index,
+                                  duration: Duration(milliseconds: 400),
+                                  curve: Curves.easeInOut,
+                                );
+                                _scrollController.animateTo(
+                                  // Add these lines
+                                  index * 65.0, // Adjust as needed
+                                  duration: Duration(milliseconds: 400),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              child: Container(
+                                width: 65,
+                                height: 50,
+                                decoration: currentPage == index
+                                    ? BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.blue, width: 3),
+                                        borderRadius: BorderRadius.circular(10),
+                                      )
+                                    : null,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                      10), // Adjust as needed
+                                  child: _rawimages.isNotEmpty
+                                      ? _rawimages[index]
+                                      : Image.asset(_imagePaths[index],
+                                          fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       );
-                    },
-                  );}
-                ),
+                    }),
               ),
             ),
 
