@@ -15,8 +15,8 @@ var restoreFaces = ValueNotifier<bool>(false);
 var seedfixed = ValueNotifier<bool>(false);
 var sampler = ValueNotifier("DPM++ 2M Karras");
 var defaultPrompt = TextEditingController(text: "");
-var width = ValueNotifier<int>(512);
-var height = ValueNotifier<int>(512);
+var width = ValueNotifier<int>(1536);
+var height = ValueNotifier<int>(2048);
 var promptController = TextEditingController();
 
 Future<void> loadLastPrompt() async {
@@ -75,9 +75,9 @@ class _Advanced_settingsState extends State<Advanced_settings> {
     return makedismissible(
       child: DraggableScrollableSheet(
         //expand: false, // Set expand to false
-        initialChildSize: 0.5,
-        minChildSize: 0.5,
-        maxChildSize: 1,
+        initialChildSize: 0.7,
+        minChildSize: 0.6,
+        maxChildSize: 0.95,
         builder: (_, Controller) => Container(
           decoration: BoxDecoration(
               color: Colors.white,
@@ -610,8 +610,8 @@ Future<void> loadSavedData() async {
       defaultPrompt.text = prefs.getString("defaultPrompt") ?? "";
       defaultNegativePrompt.text =
           prefs.getString("defaultNegativePrompt") ?? "";
-      width.value = prefs.getInt("width") ?? 512;
-      height.value = prefs.getInt("height") ?? 512;
+      width.value = prefs.getInt("width") ?? 1536;
+      height.value = prefs.getInt("height") ?? 2048;
       hasDataLoaded = true;
     }
   }

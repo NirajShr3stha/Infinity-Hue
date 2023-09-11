@@ -37,6 +37,7 @@ class _ImagineState extends State<Imagine> {
   final List<Image> _rawimages = [
     // add more image paths here
   ];
+  PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,26 +55,85 @@ class _ImagineState extends State<Imagine> {
         child: Column(
           children: [
             SizedBox(
-                height: 200,
+              height: 300, // Specify your container height
+              child: PageView.builder(
+                controller: _pageController, // Add the controller to your PageView
+                itemCount: (_rawimages.isNotEmpty)
+                    ? _rawimages.length
+                    : _imagePaths.length,
+                itemBuilder: (context, index) {
+                  return Center(
+                    child: Container(
+                      width: 360, // Specify your container width
+                      height: 350, // Specify your container height
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Container(
+                            color: Colors.black,
+                          ),
+                          if (_rawimages.isNotEmpty)
+                            _rawimages[index]
+                          else
+                            Image.asset(_imagePaths[index],
+                                fit: BoxFit.scaleDown),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 8,
+                right: 8,
+              ),
+              child: SizedBox(
+                height: 80, // Specify your container height for the preview
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: (_rawimages.isNotEmpty)
                       ? _rawimages.length
                       : _imagePaths.length,
                   itemBuilder: (context, index) {
-                    if (_rawimages.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _rawimages[index],
-                      );
-                    } else {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(_imagePaths[index]),
-                      );
-                    }
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: 4.0,
+                        top: 9.0,
+                        right: 4.0,
+                        bottom: 5.0,
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          // You can add functionality to scroll to the selected image in the PageView
+                          _pageController.animateToPage( // Add this line
+                index,
+                duration: Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+              );
+                        },
+                        child: Container(
+                          width:
+                              65, // Specify your container width for the preview
+                          height:
+                              50, // Specify your container height for the preview
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(10), // Adjust as needed
+                            child: _rawimages.isNotEmpty
+                                ? _rawimages[index]
+                                : Image.asset(_imagePaths[index],
+                                    fit: BoxFit.cover),
+                          ),
+                        ),
+                      ),
+                    );
                   },
-                )),
+                ),
+              ),
+            ),
+
             const SizedBox(
               height: 10,
             ),
@@ -176,7 +236,7 @@ class _ImagineState extends State<Imagine> {
                   isDismissible: true,
                   enableDrag: true,
                   backgroundColor: Colors.transparent,
-                  
+
                   builder: (context) => Advanced_settings(),
                 );
               },
