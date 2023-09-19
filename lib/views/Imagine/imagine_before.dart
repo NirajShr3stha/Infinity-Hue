@@ -93,13 +93,16 @@ class _ImagineState extends State<Imagine> {
                         alignment: Alignment.center,
                         children: <Widget>[
                           Container(
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
-                          if (_rawimages.isNotEmpty)
-                            _rawimages[index]
-                          else
-                            Image.asset(_imagePaths[index],
-                                fit: BoxFit.scaleDown),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                15.0), // Adjust the radius as needed
+                            child: (_rawimages.isNotEmpty)
+                                ? _rawimages[index]
+                                : Image.asset(_imagePaths[index],
+                                    fit: BoxFit.scaleDown),
+                          ),
                         ],
                       ),
                     ),
