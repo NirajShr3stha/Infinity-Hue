@@ -1,3 +1,4 @@
+import 'package:ai_diffusion/views/Imagine/text_fullpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -122,6 +123,8 @@ class _Advanced_settingsState extends State<Advanced_settings> {
                   modelContainer(context),
                   restorefaceContainer(),
                   seedContainer(),
+                  seedContainer(),
+                  seedContainer(),
                 ],
               ),
             ),
@@ -131,46 +134,56 @@ class _Advanced_settingsState extends State<Advanced_settings> {
     );
   }
 
-  Container negativepromptContainer() {
-    return Container(
-      margin: const EdgeInsets.all(0.0),
-      padding: const EdgeInsets.all(8.0),
-      color: Colors.blueGrey,
-      width: double.infinity,
-      child: Column(children: [
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Negative Prompt",
-            style: TextStyle(
-              color: Colors.white,
-            ),
+ Container negativepromptContainer() {
+  return Container(
+    margin: const EdgeInsets.all(0.0),
+    padding: const EdgeInsets.all(8.0),
+    color: Colors.blueGrey,
+    width: double.infinity,
+    child: Column(children: [
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "Negative Prompt",
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 8.0), //this is for creating space
+      ),
+      const SizedBox(height: 8.0), //this is for creating space
 
-        TextFormField(
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50),
+      Hero(
+        tag: 'expand',
+        child: Material(
+          type: MaterialType.transparency,
+          child: TextFormField(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => FullScreenTextField()));
+            },
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(50),
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(50),
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+              labelStyle: TextStyle(color: Colors.white),
+              //labelText: 'Negative prompt',
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-            labelStyle: TextStyle(color: Colors.white),
-            labelText: 'Negative prompt',
+            controller: defaultNegativePrompt,
           ),
-          controller: defaultNegativePrompt,
         ),
-      ]),
-    );
-  }
+      ),
+    ]),
+  );
+}
+
 
   Container stepsContainer() {
     return Container(
