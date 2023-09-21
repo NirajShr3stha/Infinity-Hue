@@ -24,7 +24,8 @@ class _Img_discoverState extends State<Img_discover> {
 
   // Method to fetch images from the Civitai API
   Future<void> fetchImages(
-      {int limit = 20 , int page = 1, String query = "dragon"}) async {
+      {int limit = 20 , int page = 1, String sort = "Most Reactions" , var query = "castle" , var nsfw = "Soft" //None or X or Mature
+      }) async {
     setState(() {
       _isLoading = true;
     });
@@ -32,7 +33,7 @@ class _Img_discoverState extends State<Img_discover> {
     // Set the base URL for the Civitai API
     final base_url = "https://civitai.com/api/v1";
     print(limit.toString() + "   " + page.toString());
-
+    
     // Set the endpoint for the images
     final endpoint = "/images";
 
@@ -40,16 +41,18 @@ class _Img_discoverState extends State<Img_discover> {
     final params = {
       "limit": limit.toString(),
       "page": page.toString(),
-      "query": query,
+      "sort": sort,
+      "query": query.toString(),
+      "nsfw":nsfw,
     };
 
     // Build the query string from the params map
-    final queryString = Uri(queryParameters: params).query;
+    final queryString = Uri(queryParameters: params).query.replaceAll('+', '%20');;
 
     // Make the GET request to the Civitai API
     final response =
         await http.get(Uri.parse("$base_url$endpoint?$queryString"));
-
+    print("$base_url$endpoint?$queryString");
     // Check if the request was successful
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
