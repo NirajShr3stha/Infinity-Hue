@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ai_diffusion/views/Imagine/Advanced_settings.dart';
+import 'package:ai_diffusion/views/Imagine/Assets_Management/Advanced_settings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -65,6 +65,32 @@ Future<String> createImage(BuildContext context, String prompt) async {
   progressValue.value = 1;
   return images[0];
 }
+
+Future<void> doProgress() async {
+  while (true) {
+    if (!inProgress) {
+      progressValue.value = 1;
+      return;
+    }
+    getProgress().then(
+      (value) => {
+        progressValue.value = value['progress']!,
+      },
+    );
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+}
+Future<Map<String, double>> getProgress() async {
+  http.Response response = await http.get(Uri.parse('$url/sdapi/v1/progress'));
+
+  var jsonResp = jsonDecode(utf8.decode(response.bodyBytes));
+  return {
+    "progress": jsonResp['progress'],
+    "eta_relative": jsonResp['eta_relative'],
+  };
+}
+
+
 // final payload = {
 //   'prompt': prompt,
 //   'negative_prompt': negativePrompt,
@@ -152,29 +178,5 @@ Future<void> setSDModel(model, context) async {
     // print response
     print(response.body);
     throw Exception('Failed to set model! Status code: ${response.statusCode}');
-  }
-}
-
-Future<Map<String, double>> getProgress() async {
-  http.Response response = await http.get(Uri.parse('$url/sdapi/v1/progress'));
-  var jsonResp = jsonDecode(utf8.decode(response.bodyBytes));
-  return {
-    "progress": jsonResp['progress'],
-    "eta_relative": jsonResp['eta_relative'],
-  };
-}
-
-Future<void> doProgress() async {
-  while (true) {
-    if (!inProgress) {
-      progressValue.value = 1;
-      return;
-    }
-    getProgress().then(
-      (value) => {
-        progressValue.value = value['progress']!,
-      },
-    );
-    await Future.delayed(const Duration(milliseconds: 500));
   }
 }

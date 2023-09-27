@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:ai_diffusion/views/Imagine/Advanced_settings.dart';
+import 'package:ai_diffusion/views/Imagine/Assets_Management/Advanced_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:ai_diffusion/requests/txt_img.dart';
+import 'package:ai_diffusion/requests/httprequest.dart';
 
 class Imagine extends StatefulWidget {
   Imagine({super.key});
@@ -11,54 +11,25 @@ class Imagine extends StatefulWidget {
 
 class _ImagineState extends State<Imagine> {
   String imageDataBase64 = 'NONE';
-  bool val2 = false;
-  onChangeFunction2(bool newValue2) {
-    setState(() {
-      val2 = newValue2;
-    });
-  }
+ 
 
+  double fontSize = 16.0;
+  double numberOfLines = 10;
   @override
   void initState() {
-    super.initState();
-    _pageController = PageController();
-    _currentPageNotifier = ValueNotifier<int>(0);
-    _scrollController = ScrollController();
-    _pageController.addListener(() {
-      _currentPageNotifier.value = _pageController.page!.round();
-    });
+    super.initState();    
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
-    _currentPageNotifier.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
-
-  final List<String> _imagePaths = [
-    'assets/1.webp',
-    'assets/2.jpg',
-    'assets/3.webp',
-    'assets/1.webp',
-    'assets/2.jpg',
-    'assets/3.webp',
-    'assets/4.png',
-    'assets/5.jpeg',
-    'assets/6.jpeg',
-    'assets/7.jpg',
-    'assets/8.jpg',
-    'assets/9.jpeg',
-    // add more image paths here
-  ];
+  FocusNode myFocusNode = FocusNode();
+  
 
   final List<Image> _rawimages = [
     // add more image paths here
   ];
-  late final PageController _pageController;
-  late final ValueNotifier<int> _currentPageNotifier;
-  late final ScrollController _scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -75,107 +46,6 @@ class _ImagineState extends State<Imagine> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: 300, // Specify your container height
-              child: PageView.builder(
-                controller:
-                    _pageController, // Add the controller to your PageView
-
-                itemCount: (_rawimages.isNotEmpty)
-                    ? _rawimages.length
-                    : _imagePaths.length,
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: Container(
-                      width: 360, // Specify your container width
-                      height: 350, // Specify your container height
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: <Widget>[
-                          Container(
-                            color: Colors.white,
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                15.0), // Adjust the radius as needed
-                            child: (_rawimages.isNotEmpty)
-                                ? _rawimages[index]
-                                : Image.asset(_imagePaths[index],
-                                    fit: BoxFit.scaleDown),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
-              ),
-              child: SizedBox(
-                height: 80, // Specify your container height for the preview
-                child: ValueListenableBuilder<int>(
-                    valueListenable: _currentPageNotifier,
-                    builder: (context, currentPage, child) {
-                      return ListView.builder(
-                        controller: _scrollController, // Add this line
-                        scrollDirection: Axis.horizontal,
-                        itemCount: (_rawimages.isNotEmpty)
-                            ? _rawimages.length
-                            : _imagePaths.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              left: 4.0,
-                              top: 9.0,
-                              right: 4.0,
-                              bottom: 5.0,
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                _pageController.animateToPage(
-                                  index,
-                                  duration: Duration(milliseconds: 400),
-                                  curve: Curves.easeInOut,
-                                );
-                                _scrollController.animateTo(
-                                  // Add these lines
-                                  index * 65.0, // Adjust as needed
-                                  duration: Duration(milliseconds: 400),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              child: Container(
-                                width: 65,
-                                height: 50,
-                                decoration: currentPage == index
-                                    ? BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.blue, width: 3),
-                                        borderRadius: BorderRadius.circular(10),
-                                      )
-                                    : null,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                      10), // Adjust as needed
-                                  child: _rawimages.isNotEmpty
-                                      ? _rawimages[index]
-                                      : Image.asset(_imagePaths[index],
-                                          fit: BoxFit.cover),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-              ),
-            ),
-
             const SizedBox(
               height: 10,
             ),
@@ -196,23 +66,18 @@ class _ImagineState extends State<Imagine> {
                 ),
               ),
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     debugPrint('Reroll button');
-            //   },
-            //   child: const Text('Reroll Button'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     debugPrint('Upscaling button');
-            //   },
-            //   child: const Text('Upscaling Button'),
-            // ), //delete this
+            
 
             Container(
               margin: const EdgeInsets.all(10.0),
               padding: const EdgeInsets.all(10.0),
-              color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                // Use the hasFocus property of the FocusNode to change the color of the border
+                border: Border.all(
+                    color: myFocusNode.hasFocus ? Colors.blue : Colors.grey),
+              ),
               width: double.infinity,
               child: Column(children: [
                 const Align(
@@ -225,13 +90,28 @@ class _ImagineState extends State<Imagine> {
                   ),
                 ),
                 const SizedBox(height: 8.0), //this is for creating space
-                TextField(
-                  controller: promptController,
-                  decoration: InputDecoration(
-                    hintText: 'Prompt',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(color: Colors.green),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 250,
+                  ),
+                  child: Focus(
+                    onFocusChange: (hasFocus) {
+                      // Call setState to rebuild the widget with the new color
+                      setState(() {});
+                    },
+                    child: TextField(
+                      focusNode: myFocusNode,
+                      controller: promptController,
+                      decoration: InputDecoration(
+                        hintText: 'Prompt',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide
+                              .none, // This makes the border invisible but keeps the rounded corners
+                        ),
+                      ),
+                      maxLines: null,
+                      minLines: 20, // Add this
                     ),
                   ),
                 ),
@@ -285,23 +165,7 @@ class _ImagineState extends State<Imagine> {
               child: Text('Advanced Settings'),
             ),
 
-            // DraggableScrollableSheet(
-            //   initialChildSize: 0.3,
-            //   maxChildSize: 0.7,
-            //   builder:
-            //       (BuildContext context, ScrollController scrollController) {
-            //     return Container(
-            //       color: Colors.blue[100],
-            //       child: ListView.builder(
-            //         controller: scrollController,
-            //         itemCount: 25,
-            //         itemBuilder: (BuildContext context, int index) {
-            //           return ListTile(title: Text('Item $index'));
-            //         },
-            //       ),
-            //     );
-            //   },
-            // ),
+            
           ],
         ),
       ),

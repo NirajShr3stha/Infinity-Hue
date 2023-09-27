@@ -2,7 +2,7 @@ import 'package:ai_diffusion/views/Imagine/text_fullpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:ai_diffusion/requests/txt_img.dart';
+import 'package:ai_diffusion/requests/httprequest.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 var defaultNegativePrompt = TextEditingController(text: "");
@@ -16,8 +16,8 @@ var restoreFaces = ValueNotifier<bool>(false);
 var seedfixed = ValueNotifier<bool>(false);
 var sampler = ValueNotifier("DPM++ 2M Karras");
 var defaultPrompt = TextEditingController(text: "");
-var width = ValueNotifier<int>(1536);
-var height = ValueNotifier<int>(2048);
+var width = ValueNotifier<int>(520);
+var height = ValueNotifier<int>(520);
 var promptController = TextEditingController();
 
 Future<void> loadLastPrompt() async {
@@ -653,8 +653,8 @@ Future<void> loadSavedData() async {
       defaultPrompt.text = prefs.getString("defaultPrompt") ?? "";
       defaultNegativePrompt.text =
           prefs.getString("defaultNegativePrompt") ?? "";
-      width.value = prefs.getInt("width") ?? 1536;
-      height.value = prefs.getInt("height") ?? 2048;
+      width.value = prefs.getInt("width") ?? 520;
+      height.value = prefs.getInt("height") ?? 520;
       hasDataLoaded = true;
     }
   }
