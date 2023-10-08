@@ -1,5 +1,5 @@
+import 'package:ai_diffusion/views/Imagine/imagine_before.dart';
 import 'package:ai_diffusion/views/gallery_page.dart';
-import 'package:ai_diffusion/views/Imagine/imagine_after.dart';
 import 'package:ai_diffusion/views/Discover/showcase.dart';
 import 'package:flutter/material.dart';
 

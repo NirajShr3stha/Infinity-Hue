@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ai_diffusion/views/Imagine/Assets_Management/Advanced_settings.dart';
+import 'package:ai_diffusion/views/Imagine/imagine_after.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_diffusion/requests/httprequest.dart';
 
@@ -11,21 +12,20 @@ class Imagine extends StatefulWidget {
 
 class _ImagineState extends State<Imagine> {
   String imageDataBase64 = 'NONE';
- 
 
   double fontSize = 16.0;
   double numberOfLines = 10;
   @override
   void initState() {
-    super.initState();    
+    super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
   }
+
   FocusNode myFocusNode = FocusNode();
-  
 
   final List<Image> _rawimages = [
     // add more image paths here
@@ -35,7 +35,7 @@ class _ImagineState extends State<Imagine> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Learn Flutters'),
+          title: const Text('Imagine before'),
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
@@ -66,8 +66,6 @@ class _ImagineState extends State<Imagine> {
                 ),
               ),
             ),
-            
-
             Container(
               margin: const EdgeInsets.all(10.0),
               padding: const EdgeInsets.all(10.0),
@@ -117,7 +115,6 @@ class _ImagineState extends State<Imagine> {
                 ),
               ]),
             ),
-
             ElevatedButton(
               onPressed: () {
                 saveConfig(context);
@@ -125,6 +122,10 @@ class _ImagineState extends State<Imagine> {
                 //     Navigator.pushNamedAndRemoveUntil(
                 //         context, "/", (route) => false)); this navigates to homepage
                 debugPrint('Imagine');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => imagine_after()),
+                );
                 createImage(context, promptController.text).then(
                   (value) => {
                     setState(() {
@@ -149,7 +150,6 @@ class _ImagineState extends State<Imagine> {
               },
               child: const Text('Imagine'),
             ),
-
             ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
@@ -158,14 +158,11 @@ class _ImagineState extends State<Imagine> {
                   isDismissible: true,
                   enableDrag: true,
                   backgroundColor: Colors.transparent,
-
                   builder: (context) => Advanced_settings(),
                 );
               },
               child: Text('Advanced Settings'),
             ),
-
-            
           ],
         ),
       ),

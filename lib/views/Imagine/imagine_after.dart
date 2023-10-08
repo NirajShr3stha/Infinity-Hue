@@ -3,13 +3,13 @@ import 'package:ai_diffusion/views/Imagine/Assets_Management/Advanced_settings.d
 import 'package:flutter/material.dart';
 import 'package:ai_diffusion/requests/httprequest.dart';
 
-class Imagine extends StatefulWidget {
-  Imagine({super.key});
+class imagine_after extends StatefulWidget {
+  imagine_after({super.key});
   @override
-  State<Imagine> createState() => _ImagineState();
+  State<imagine_after> createState() => _imagine_afterState();
 }
 
-class _ImagineState extends State<Imagine> {
+class _imagine_afterState extends State<imagine_after> {
   String imageDataBase64 = 'NONE';
   bool val2 = false;
   onChangeFunction2(bool newValue2) {
@@ -41,18 +41,18 @@ class _ImagineState extends State<Imagine> {
 
   FocusNode myFocusNode = FocusNode();
   final List<String> _imagePaths = [
-    'assets/1.webp',
-    'assets/2.jpg',
-    'assets/3.webp',
-    'assets/1.webp',
-    'assets/2.jpg',
-    'assets/3.webp',
-    'assets/4.png',
-    'assets/5.jpeg',
-    'assets/6.jpeg',
-    'assets/7.jpg',
-    'assets/8.jpg',
-    'assets/9.jpeg',
+    'assets/image_placeholder.png',
+    // 'assets/2.jpg',
+    // 'assets/3.webp',
+    // 'assets/1.webp',
+    // 'assets/2.jpg',
+    // 'assets/3.webp',
+    // 'assets/4.png',
+    // 'assets/5.jpeg',
+    // 'assets/6.jpeg',
+    // 'assets/7.jpg',
+    // 'assets/8.jpg',
+    // 'assets/9.jpeg',
     // add more image paths here
   ];
 
@@ -67,7 +67,7 @@ class _ImagineState extends State<Imagine> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Learn Flutters'),
+          title: const Text('Imagine after'),
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {

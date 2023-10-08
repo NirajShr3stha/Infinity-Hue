@@ -73,66 +73,65 @@ class _Advanced_settingsState extends State<Advanced_settings> {
 
   @override
   Widget build(BuildContext context) {
-    return makedismissible(
-      child: DraggableScrollableSheet(
-        //expand: false, // Set expand to false
-        initialChildSize: 0.7,
-        minChildSize: 0.6,
-        maxChildSize: 1,
-        builder: (_, Controller) => Container(
+  return makedismissible(
+    child: DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      minChildSize: 0.5,
+      maxChildSize: 1,
+      snap: true,
+      snapSizes: const [0.6, 1],
+      builder: (BuildContext context, ScrollController scrollController) {
+        return Container(
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
           padding: EdgeInsets.all(8),
-          child: Column(children: [
-            SingleChildScrollView(
-              controller: Controller,
-              child: Container(
-                child: Column(children: [
-                  Divider(
-                    color: Colors.grey,
-                    thickness: 2,
-                    indent: 150,
-                    endIndent: 150,
+          child: ListView(
+            controller: scrollController,
+            children: [
+              // This is your top half
+              Column(children: [
+                Divider(
+                  color: Colors.grey,
+                  thickness: 2,
+                  indent: 150,
+                  endIndent: 150,
+                ),
+                SizedBox(height: 2),
+                Container(
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      Icon(Icons.keyboard_arrow_down),
+                      Expanded(
+                          child: Text("Advanced Settings",
+                              textAlign: TextAlign.center)),
+                    ],
                   ),
-                  SizedBox(height: 2),
-                  Container(
-                    color: Colors.white,
-                    child: Row(
-                      children: [
-                        Icon(Icons.keyboard_arrow_down),
-                        Expanded(
-                            child: Text("Advanced Settings",
-                                textAlign: TextAlign.center)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Divider(color: Colors.black),
-                ]),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                controller: Controller,
-                children: [
-                  negativepromptContainer(),
-                  stepsContainer(),
-                  cfgContainer(),
-                  samplerContainer(),
-                  modelContainer(context),
-                  restorefaceContainer(),
-                  seedContainer(),
-                  seedContainer(),
-                  seedContainer(),
-                ],
-              ),
-            ),
-          ]),
-        ),
-      ),
-    );
-  }
+                ),
+                SizedBox(height: 5),
+                Divider(color: Colors.black),
+              ]),
+
+              // This is your bottom half
+              negativepromptContainer(),
+              stepsContainer(),
+              cfgContainer(),
+              samplerContainer(),
+              modelContainer(context),
+              restorefaceContainer(),
+              seedContainer(),
+              seedContainer(),
+              seedContainer(),
+            ],
+          ),
+        );
+      },
+    ),
+  );
+}
+
+
 
  Container negativepromptContainer() {
   return Container(
