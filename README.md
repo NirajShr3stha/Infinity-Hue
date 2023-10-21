@@ -1,8 +1,6 @@
 # Infinity-Hue
 
-//<p align="center">
-  //<img src="https://infinityhue.us.to/assets/logo.png" alt="Infinity-Hue Logo" width="300" height="300">
-//</p>
+
 
 Infinity-Hue is an AI-powered image art generator that utilizes cutting-edge deep learning algorithms to transform ordinary images into stunning pieces of art. With Infinity-Hue, you can explore your creativity and generate unique artistic interpretations of images.
 
